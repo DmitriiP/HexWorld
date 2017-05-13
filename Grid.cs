@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HexWorld.Enums;
 
 namespace HexWorld
 {

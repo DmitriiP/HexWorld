@@ -1,4 +1,4 @@
-﻿namespace HexWorld
+﻿namespace HexWorld.Enums
 {
     public enum HexNeighbors
     {

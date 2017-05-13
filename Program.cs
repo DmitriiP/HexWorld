@@ -6,11 +6,6 @@ namespace HexWorld
     {
         static void Main(string[] args)
         {
-//            var grid = new Grid(1024, 1024);
-//            Console.WriteLine(Grid.RowBorders(1024, -1));
-//            Console.WriteLine(Grid.RowBorders(1024, 0));
-//            Console.WriteLine(Grid.RowBorders(1024, 1));
-//            var center = grid.GetHexAt(-513, 0);
             const int width = 9;
             const int row = -3;
             var grid = new Grid(width, 6);
