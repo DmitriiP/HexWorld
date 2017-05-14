@@ -9,6 +9,8 @@ namespace HexWorld
             const int width = 50;
             const int height = 80;
             var grid = new Grid(width, height);
+            var mapGenerator = new MapGenerator();
+            mapGenerator.CellularGenerator(grid, 0.6);
             const int row = 0;
             var center = grid.GetHexAt(-4, row);
             var neighbors = grid.GetNeighbors(center);
