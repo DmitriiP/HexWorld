@@ -2,13 +2,15 @@
 {
     public enum TileTypes
     {
-    Ocean,
-    Desert,
-    Jungle,
-    Forest,
-    Mountain,
-    Grassland,
-    Swamp,
-    Steppe,
+        Ocean,
+        Desert,
+        Jungle,
+        Forest,
+        Mountain,
+        Grassland,
+        Swamp,
+        Steppe,
+        Hill,
+        Tundra,
     }
 }
