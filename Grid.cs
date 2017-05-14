@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using HexWorld.Enums;
 
 namespace HexWorld
@@ -8,24 +10,24 @@ namespace HexWorld
     {
         private readonly Dictionary<int, Hex> _map;
         private readonly Dictionary<int, Dictionary<HexNeighbors, Hex>> _neighbors;
-        private readonly int _width;
-        private readonly int _topBorder;
-        private readonly int _bottomBorder;
+        public int Width { get; }
+        public int TopBorder { get; }
+        public int BottomBorder { get; }
         private readonly bool _wrapX;
         private readonly bool _wrapY;
 
         public Grid(int width, int height, bool wrapX = true, bool wrapY = false)
         {
-            _width = width;
+            Width = width;
             _wrapX = wrapX;
             _wrapY = wrapY;
             if (_wrapY)
                 throw new NotImplementedException("Y-Axis Wraps are not implemented yet.");
-            _topBorder = -height / 2;
-            _bottomBorder = (height + height % 2) / 2 - 1;
+            TopBorder = -height / 2;
+            BottomBorder = (height + height % 2) / 2 - 1;
             _map = new Dictionary<int, Hex>(height * width);
             _neighbors = new Dictionary<int, Dictionary<HexNeighbors, Hex>>(height * width);
-            for (var y = _topBorder; y <= _bottomBorder; y++)
+            for (var y = TopBorder; y <= BottomBorder; y++)
             {
                 var rowBorders = RowBorders(width, y);
                 var leftBorder = rowBorders.Item1;
@@ -59,6 +61,33 @@ namespace HexWorld
             return _map.ContainsKey(key) ? _map[key] : null;
         }
 
+        public IEnumerable<Hex> GetAllCells()
+        {
+            return _map.Select(hex => hex.Value);
+        }
+
+        public override string ToString()
+        {
+            var result = new StringBuilder();
+            for (var y = TopBorder; y <= BottomBorder; y++)
+            {
+                if (y % 2 == 0)
+                {
+                    result.Append("  ");
+                }
+                var rowBorders = RowBorders(Width, y);
+                var leftBorder = rowBorders.Item1;
+                var rightBorder = rowBorders.Item2;
+
+                for (var x = leftBorder; x <= rightBorder; x++)
+                {
+                    result.Append(GetHexAt(x, y).Tile + " ");
+                }
+                result.AppendLine();
+            }
+            return result.ToString();
+        }
+
         public Dictionary<HexNeighbors, Hex> GetNeighbors(Hex hex)
         {
             if (_neighbors.ContainsKey(hex.MapKey()))
@@ -79,10 +108,10 @@ namespace HexWorld
             }
 
             var isEvenRow = hex.Row % 2 == 0;
-            var rowBorders = RowBorders(_width, hex.Row);
+            var rowBorders = RowBorders(Width, hex.Row);
             var leftBorder = rowBorders.Item1;
             var rightBorder = rowBorders.Item2;
-            if (_wrapX && _wrapY && hex.IsInCorner(_width, _topBorder, _bottomBorder))
+            if (_wrapX && _wrapY && hex.IsInCorner(Width, TopBorder, BottomBorder))
             {
                 // TODO this will be ugly, will leave it as it is for now.
                 throw new NotImplementedException();

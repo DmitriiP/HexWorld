@@ -6,22 +6,19 @@ namespace HexWorld
     {
         static void Main(string[] args)
         {
-            const int width = 9;
-            const int row = -3;
-            var grid = new Grid(width, 6);
-            Console.WriteLine(Grid.RowBorders(width, row - 1));
-            Console.WriteLine(Grid.RowBorders(width, row));
-            Console.WriteLine(Grid.RowBorders(width, row + 1));
-            var center = grid.GetHexAt(-3, row);
+            const int width = 50;
+            const int height = 80;
+            var grid = new Grid(width, height);
+            const int row = 0;
+            var center = grid.GetHexAt(-4, row);
             var neighbors = grid.GetNeighbors(center);
-            grid.GetNeighbors(center);
-            grid.GetNeighbors(center);
             foreach (var neighbor in neighbors)
             {
                 Console.WriteLine(neighbor.Value != null
-                    ? $"Neighbor {neighbor.Key} {neighbor.Value.Column} {neighbor.Value.Row}"
+                    ? $"Neighbor {neighbor.Key} {neighbor.Value}"
                     : $"Neighbor {neighbor.Key} missing!");
             }
+            Console.Write(grid);
             Console.WriteLine("Hello World!");
         }
     }
