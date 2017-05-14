@@ -34,10 +34,7 @@ namespace HexWorld
                 // picking several points on the map, where we start our algorithm
                 for (var i = 0; i < 4; i++)
                 {
-                    var row = _random.Next(grid.TopBorder, grid.BottomBorder);
-                    var rowBorders = Grid.RowBorders(grid.Width, row);
-                    var column = _random.Next(rowBorders.Item1, rowBorders.Item2);
-                    var hex = grid.GetHexAt(column, row);
+                    var hex = grid.GetRandomHex(_random);
                     Console.WriteLine(hex);
                     queue.Enqueue(hex);
                 }
@@ -70,6 +67,66 @@ namespace HexWorld
             {
                 Console.WriteLine($"Refine run {i}");
                 CellularAutomata();
+            }
+        }
+
+        /// <summary>
+        /// Generate mountain ranges and also some hills.
+        /// Algorithm simulates borders between tectonic plates.
+        /// It does so by doing a random curve between two random cells.
+        /// Along the way either mountains, hills or nothing is raised.
+        /// Process repeats several times
+        /// </summary>
+        /// <param name="grid">our map goes here</param>
+        public void GenerateMountains(Grid grid)
+        {
+            var startCell = grid.GetRandomHex(_random);
+            var endCell = grid.GetRandomHex(_random);
+
+
+            var range = new List<int>();
+            var current = startCell;
+            while (current != endCell)
+            {
+                // TODO check previous cells in range
+                range.Add(current.MapKey());
+                if (current.Tile.Type == TileTypes.Desert)
+                {
+                    var chance = _random.NextDouble();
+                    if (chance <= 0.2)
+                        current.Tile.ChangeTile(TileTypes.Mountain);
+                    else if(chance <= 0.6 )
+                        current.Tile.ChangeTile(TileTypes.Hill);
+                }
+                var smallestDistance = int.MaxValue;
+                var distances = new Dictionary<HexNeighbors, int>();
+                var neighbors = grid.GetNeighbors(current);
+                foreach (var neighbor in neighbors)
+                {
+                    if (neighbor.Value == null)
+                        continue;
+                    var distance = neighbor.Value.DistanceTo(endCell);
+                    if (distance < smallestDistance)
+                        smallestDistance = distance;
+                    distances[neighbor.Key] = distance;
+                }
+                var chances = new Dictionary<HexNeighbors, double>();
+                foreach (var distance in distances)
+                {
+                    chances[distance.Key] = (distance.Value - smallestDistance) * 0.45 + 0.05;
+                    if (chances[distance.Key] > 1)
+                        chances[distance.Key] = 0.95;
+                }
+                if (neighbors.Values.All(p => p != null && range.Contains(p.MapKey())))
+                    current = neighbors.First(p => distances[p.Key] == smallestDistance).Value;
+                foreach (var distance in chances.OrderBy(d => -d.Value))
+                {
+                    var chance = _random.NextDouble();
+                    if (chance <= distance.Value || range.Contains(neighbors[distance.Key].MapKey()))
+                        continue;
+                    current = neighbors[distance.Key];
+                    break;
+                }
             }
         }
     }

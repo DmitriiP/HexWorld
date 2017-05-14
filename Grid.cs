@@ -66,6 +66,17 @@ namespace HexWorld
             return _map.Select(hex => hex.Value);
         }
 
+        public Hex GetRandomHex(Random random=null)
+        {
+            if (random == null)
+                random = new Random();
+            var row = random.Next(TopBorder, BottomBorder);
+            var rowBorders = RowBorders(Width, row);
+            var column = random.Next(rowBorders.Item1, rowBorders.Item2);
+            var hex = GetHexAt(column, row);
+            return hex;
+        }
+
         public override string ToString()
         {
             var result = new StringBuilder();

@@ -27,6 +27,14 @@ namespace HexWorld
                     IsWater = false;
                     Printable = "░░░";
                     break;
+                case TileTypes.Mountain:
+                    IsWater = false;
+                    Printable = "╔╬╗";
+                    break;
+                case TileTypes.Hill:
+                    IsWater = false;
+                    Printable = "▅▂▅";
+                    break;
                 default:
                     throw new ArgumentException("Unknown Tile Type");
             }

@@ -1,4 +1,5 @@
-﻿using HexWorld.Enums;
+﻿using System;
+using HexWorld.Enums;
 
 namespace HexWorld
 {
@@ -47,6 +48,13 @@ namespace HexWorld
         {
             return new Hex(left.Column - right.Column,
                 left.Row - right.Row);
+        }
+
+        public int DistanceTo(Hex other)
+        {
+            return (Math.Abs(Column - other.Column) +
+                    Math.Abs(Column + Row - other.Column - other.Row) +
+                    Math.Abs(Row - other.Row)) / 2;
         }
 
         public bool IsAtTopBorder(int topBorder)
