@@ -1,27 +1,35 @@
-﻿namespace HexWorld
+﻿using HexWorld.Enums;
+
+namespace HexWorld
 {
     /*
         Basic cell in our world.
     */
     public class Hex
     {
-        private readonly int _column, _row;
+        public int Row { get; }
 
-        public int Row => _row;
+        public int Column { get; }
 
-        public int Column => _column;
+        public Tile Tile { get; set; }
 
         private const int ColumnKeyOffset = 32768;
 
-        public Hex(int column, int row)
+        public Hex(int column, int row, Tile tile=null)
         {
-            this._column = column;
-            this._row = row;
+            Column = column;
+            Row = row;
+            Tile = tile ?? new Tile(TileTypes.Ocean);
+        }
+
+        public override string ToString()
+        {
+            return $"[{MapKey()}] Hex at ({Column},{Row}), has type of {Tile.Type}";
         }
 
         public int MapKey()
         {
-            return _column * ColumnKeyOffset + _row;
+            return Column * ColumnKeyOffset + Row;
         }
 
         public static int MapKey(int column, int row)
@@ -31,34 +39,34 @@
 
         public static Hex operator +(Hex left, Hex right)
         {
-            return new Hex(left._column + right._column,
-                left._row + right._row);
+            return new Hex(left.Column + right.Column,
+                left.Row + right.Row);
         }
 
         public static Hex operator -(Hex left, Hex right)
         {
-            return new Hex(left._column - right._column,
-                left._row - right._row);
+            return new Hex(left.Column - right.Column,
+                left.Row - right.Row);
         }
 
         public bool IsAtTopBorder(int topBorder)
         {
-            return _row == topBorder;
+            return Row == topBorder;
         }
 
         public bool IsAtBottomBorder(int bottomBorder)
         {
-            return _row == bottomBorder;
+            return Row == bottomBorder;
         }
 
         public bool IsAtLeftBorder(int width)
         {
-            return _column == -width / 2 - 1 + width % 2 - (_row + _row % 2) / 2;
+            return Column == -width / 2 - 1 + width % 2 - (Row + Row % 2) / 2;
         }
 
         public bool IsAtRightBorder(int width)
         {
-            return _column == width / 2 - 1 + width % 2 - (_row + _row % 2) / 2;
+            return Column == width / 2 - 1 + width % 2 - (Row + Row % 2) / 2;
         }
 
         public bool IsInCorner(int width, int topBorder, int bottomBorder)
