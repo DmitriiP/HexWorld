@@ -21,7 +21,8 @@ namespace HexWorld
             {
                 case TileTypes.Ocean:
                     IsWater = true;
-                    Printable = "▓▓▓";
+//                    Printable = "▓▓▓";
+                    Printable = "   ";
                     break;
                 case TileTypes.Desert:
                     IsWater = false;
@@ -34,6 +35,18 @@ namespace HexWorld
                 case TileTypes.Hill:
                     IsWater = false;
                     Printable = "▅▂▅";
+                    break;
+                case TileTypes.Grassland:
+                    IsWater = false;
+                    Printable = "▒▒▒";
+                    break;
+                case TileTypes.Steppe:
+                    IsWater = false;
+                    Printable = "░▒░";
+                    break;
+                case TileTypes.Tundra:
+                    IsWater = false;
+                    Printable = "***";
                     break;
                 default:
                     throw new ArgumentException("Unknown Tile Type");
