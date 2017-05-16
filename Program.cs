@@ -13,6 +13,7 @@ namespace HexWorld
             mapGenerator.CellularGenerator(grid, 0.6);
             for (var i = 0; i < 10; i++)
                 mapGenerator.GenerateMountains(grid);
+            mapGenerator.GenerateBioms(grid);
             const int row = 0;
             var center = grid.GetHexAt(-4, row);
             var neighbors = grid.GetNeighbors(center);

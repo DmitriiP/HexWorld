@@ -95,7 +95,7 @@ namespace HexWorld
                     var chance = _random.NextDouble();
                     if (chance <= 0.2)
                         current.Tile.ChangeTile(TileTypes.Mountain);
-                    else if(chance <= 0.6 )
+                    else if(chance <= 0.4 )
                         current.Tile.ChangeTile(TileTypes.Hill);
                 }
                 var smallestDistance = int.MaxValue;
@@ -128,6 +128,52 @@ namespace HexWorld
                     break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Let's give our map some diversity.
+        /// This should firstly plant dominating bioms separated by latitude,
+        /// And secondary should place some blobs of rarer bioms.
+        /// </summary>
+        /// <param name="grid"></param>
+        public void GenerateBioms(Grid grid)
+        {
+            var topTropic = grid.TopBorder / 4;
+            var bottomTropic = grid.BottomBorder / 4;
+            var topArctic = grid.TopBorder * 3 / 4;
+            var bottomArctic = grid.BottomBorder * 3 / 4;
+
+            void FillLatitudes(int top, int bottom, TileTypes type)
+            {
+                for (var y = top; y < bottom; y++)
+                {
+                    var rowBorders = Grid.RowBorders(grid.Width, y);
+                    for (var x = rowBorders.Item1; x <= rowBorders.Item2; x++)
+                    {
+                        var hex = grid.GetHexAt(x, y);
+                        if (hex.Tile.Type != TileTypes.Desert) continue;
+                        hex.Tile.ChangeTile(type);
+                        var chanceForNeigbors = _random.NextDouble();
+                        if (chanceForNeigbors < 0.7) continue;
+                        var neigbors = grid.GetNeighbors(hex);
+                        foreach (var neigbor in neigbors.Values)
+                        {
+                            if (neigbor == null ||
+                                neigbor.Tile.Type == TileTypes.Hill ||
+                                neigbor.Tile.Type == TileTypes.Mountain ||
+                                neigbor.Tile.Type == TileTypes.Ocean ||
+                                neigbor.Tile.Type == type) continue;
+                            neigbor.Tile.ChangeTile(type);
+                        }
+                    }
+                }
+            }
+            FillLatitudes(grid.TopBorder, topArctic, TileTypes.Tundra);
+            FillLatitudes(bottomArctic, grid.BottomBorder + 1, TileTypes.Tundra);
+            FillLatitudes(topTropic, bottomTropic, TileTypes.Steppe);
+            FillLatitudes(topArctic, topTropic, TileTypes.Grassland);
+            FillLatitudes(bottomTropic, bottomArctic, TileTypes.Grassland);
+
         }
     }
 }
