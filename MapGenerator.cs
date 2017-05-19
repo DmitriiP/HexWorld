@@ -143,6 +143,7 @@ namespace HexWorld
             var topArctic = grid.TopBorder * 5 / 6;
             var bottomArctic = grid.BottomBorder * 5 / 6;
 
+
             void SpreadToNeighbors(Hex hex, double gate, TileTypes type)
             {
                 var chanceForNeigbors = _random.NextDouble();
@@ -181,6 +182,57 @@ namespace HexWorld
             FillLatitudes(topArctic, topTropic, TileTypes.Grassland);
             FillLatitudes(bottomTropic, bottomArctic, TileTypes.Grassland);
 
+            bool AvailabiltyCriteria(Hex hex)
+            {
+                return hex != null && (
+                           hex.Tile.Type != TileTypes.Hill ||
+                           hex.Tile.Type != TileTypes.Mountain ||
+                           hex.Tile.Type != TileTypes.Ocean);
+            }
+
+            void GenerateBlob(Hex start, TileTypes type, int size)
+            {
+                var available = grid.GetArea(start, AvailabiltyCriteria);
+                var availableCount = available.Count();
+                if (availableCount == 0) return;
+                if (availableCount < size)
+                    size = availableCount / 2 + 1;
+                var filled = 0;
+                var queue = new Queue<Hex>();
+                queue.Enqueue(start);
+                while (filled < size)
+                {
+                    var hex = queue.Dequeue();
+                    hex.Tile.ChangeTile(type);
+                    var neighbors = grid.GetNeighbors(hex).Values.OrderBy(p => _random.Next());
+                    foreach (var neighbor in neighbors)
+                    {
+                        if (AvailabiltyCriteria(neighbor) && neighbor.Tile.Type != type)
+                            queue.Enqueue(neighbor);
+                    }
+                    filled++;
+                }
+            }
+
+            void PlaceBlobs(int top, int bottom, TileTypes type, double chance, int minSize, int maxSize)
+            {
+                for (var y = top; y < bottom; y++)
+                {
+                    var rowBorders = Grid.RowBorders(grid.Width, y);
+                    for (var x = rowBorders.Item1; x <= rowBorders.Item2; x++)
+                    {
+                        var hex = grid.GetHexAt(x, y);
+                        if (!AvailabiltyCriteria(hex) || _random.NextDouble() < 1.0 - chance) continue;
+                        GenerateBlob(hex, type, _random.Next(minSize, maxSize));
+                    }
+                }
+            }
+
+            PlaceBlobs(topTropic, bottomTropic, TileTypes.Jungle, 0.01, 3, 6);
+            PlaceBlobs(topTropic, bottomTropic, TileTypes.Desert, 0.008, 1, 8);
+            PlaceBlobs(grid.TopBorder, topTropic, TileTypes.Forest, 0.01, 2, 4);
+            PlaceBlobs(bottomTropic, grid.BottomBorder + 1, TileTypes.Forest, 0.01, 2, 4);
+            PlaceBlobs(grid.TopBorder, grid.BottomBorder + 1, TileTypes.Swamp, 0.005, 1, 3);
         }
     }
 }
