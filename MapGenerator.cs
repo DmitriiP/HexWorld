@@ -140,8 +140,26 @@ namespace HexWorld
         {
             var topTropic = grid.TopBorder / 4;
             var bottomTropic = grid.BottomBorder / 4;
-            var topArctic = grid.TopBorder * 3 / 4;
-            var bottomArctic = grid.BottomBorder * 3 / 4;
+            var topArctic = grid.TopBorder * 5 / 6;
+            var bottomArctic = grid.BottomBorder * 5 / 6;
+
+            void SpreadToNeighbors(Hex hex, double gate, TileTypes type)
+            {
+                var chanceForNeigbors = _random.NextDouble();
+                if (chanceForNeigbors < 1.0 - gate) return;
+                var neigbors = grid.GetNeighbors(hex);
+                foreach (var neigbor in neigbors.Values)
+                {
+                    if (neigbor == null ||
+                        neigbor.Tile.Type == TileTypes.Hill ||
+                        neigbor.Tile.Type == TileTypes.Mountain ||
+                        neigbor.Tile.Type == TileTypes.Ocean ||
+                        neigbor.Tile.Type == type) continue;
+                    neigbor.Tile.ChangeTile(type);
+                    SpreadToNeighbors(neigbor, gate / 3.0, type);
+                }
+
+            }
 
             void FillLatitudes(int top, int bottom, TileTypes type)
             {
@@ -153,18 +171,7 @@ namespace HexWorld
                         var hex = grid.GetHexAt(x, y);
                         if (hex.Tile.Type != TileTypes.Desert) continue;
                         hex.Tile.ChangeTile(type);
-                        var chanceForNeigbors = _random.NextDouble();
-                        if (chanceForNeigbors < 0.7) continue;
-                        var neigbors = grid.GetNeighbors(hex);
-                        foreach (var neigbor in neigbors.Values)
-                        {
-                            if (neigbor == null ||
-                                neigbor.Tile.Type == TileTypes.Hill ||
-                                neigbor.Tile.Type == TileTypes.Mountain ||
-                                neigbor.Tile.Type == TileTypes.Ocean ||
-                                neigbor.Tile.Type == type) continue;
-                            neigbor.Tile.ChangeTile(type);
-                        }
+                        SpreadToNeighbors(hex, 0.3, type);
                     }
                 }
             }
