@@ -48,6 +48,18 @@ namespace HexWorld
                     IsWater = false;
                     Printable = "***";
                     break;
+                case TileTypes.Jungle:
+                    IsWater = false;
+                    Printable = "╫╫╫";
+                    break;
+                case TileTypes.Forest:
+                    IsWater = false;
+                    Printable = "┼┼┼";
+                    break;
+                case TileTypes.Swamp:
+                    IsWater = false;
+                    Printable = "▚▞▜";
+                    break;
                 default:
                     throw new ArgumentException("Unknown Tile Type");
             }
