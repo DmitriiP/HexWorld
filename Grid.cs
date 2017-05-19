@@ -155,5 +155,30 @@ namespace HexWorld
             _neighbors.Add(hex.MapKey(), result);
             return result;
         }
+
+        /// <summary>
+        /// Gets max available area of hexes, that comply to the given criteria.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
+        public List<Hex> GetArea(Hex start, Func<Hex, bool> criteria)
+        {
+            var result = new List<Hex>();
+
+            void Recursion(Hex hex)
+            {
+                if (!criteria(hex) || result.Contains(hex)) return;
+                result.Add(hex);
+                foreach (var neighbor in GetNeighbors(hex).Values)
+                {
+                    Recursion(neighbor);
+                }
+            }
+
+            Recursion(start);
+
+            return result;
+        }
     }
 }
