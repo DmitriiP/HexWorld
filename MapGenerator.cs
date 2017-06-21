@@ -184,10 +184,10 @@ namespace HexWorld
 
             bool AvailabiltyCriteria(Hex hex)
             {
-                return hex != null && (
-                           hex.Tile.Type != TileTypes.Hill ||
-                           hex.Tile.Type != TileTypes.Mountain ||
-                           hex.Tile.Type != TileTypes.Ocean);
+                return hex != null && 
+                       hex.Tile.Type != TileTypes.Hill &&
+                       hex.Tile.Type != TileTypes.Mountain &&
+                       hex.Tile.Type != TileTypes.Ocean;
             }
 
             void GenerateBlob(Hex start, TileTypes type, int size)
@@ -223,16 +223,17 @@ namespace HexWorld
                     {
                         var hex = grid.GetHexAt(x, y);
                         if (!AvailabiltyCriteria(hex) || _random.NextDouble() < 1.0 - chance) continue;
+                        if (grid.GetNeighbors(hex).Values.Count(p => p != null && p.Tile.Type == type) != 0) continue;
                         GenerateBlob(hex, type, _random.Next(minSize, maxSize));
                     }
                 }
             }
 
-            PlaceBlobs(topTropic, bottomTropic, TileTypes.Jungle, 0.01, 3, 6);
-            PlaceBlobs(topTropic, bottomTropic, TileTypes.Desert, 0.008, 1, 8);
-            PlaceBlobs(grid.TopBorder, topTropic, TileTypes.Forest, 0.01, 2, 4);
-            PlaceBlobs(bottomTropic, grid.BottomBorder + 1, TileTypes.Forest, 0.01, 2, 4);
-            PlaceBlobs(grid.TopBorder, grid.BottomBorder + 1, TileTypes.Swamp, 0.005, 1, 3);
+            PlaceBlobs(topTropic, bottomTropic, TileTypes.Jungle, 0.035, 3, 6);
+            PlaceBlobs(topTropic, bottomTropic, TileTypes.Desert, 0.029, 1, 8);
+            PlaceBlobs(grid.TopBorder, topTropic, TileTypes.Forest, 0.03, 2, 4);
+            PlaceBlobs(bottomTropic, grid.BottomBorder + 1, TileTypes.Forest, 0.03, 2, 4);
+            PlaceBlobs(grid.TopBorder, grid.BottomBorder + 1, TileTypes.Swamp, 0.029, 1, 3);
         }
     }
 }
