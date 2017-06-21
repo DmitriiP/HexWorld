@@ -202,6 +202,8 @@ namespace HexWorld
                 queue.Enqueue(start);
                 while (filled < size)
                 {
+                    // TODO had the queue empty once, need to investigate.
+                    if (queue.Count == 0) break;
                     var hex = queue.Dequeue();
                     hex.Tile.ChangeTile(type);
                     var neighbors = grid.GetNeighbors(hex).Values.OrderBy(p => _random.Next());
